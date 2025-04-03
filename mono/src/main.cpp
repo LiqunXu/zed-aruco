@@ -522,6 +522,25 @@ int main(int argc, char **argv)
       std::cout << "Pose Reset to pose: " << pose.getTranslation() << ", " << pose.getEulerAngles() << std::endl;
       zed.resetPositionalTracking(pose);
       has_reset = true;
+
+       // Save the Aruco pose into a file (translation: tx ty tz, rotation: roll pitch yaw)
+      std::ofstream pose_file("robot_aruco_pose.txt");
+      if(pose_file.is_open())
+      {
+          // Get translation and Euler angles (assume pose is in the proper coordinate system)
+          auto translation = pose.getTranslation();
+          auto euler = pose.getEulerAngles(false);  // Euler angles in radians
+          
+          // Write values separated by space: tx ty tz roll pitch yaw
+          pose_file << translation.x << " " << translation.y << " " << translation.z << " "
+                    << euler.x << " " << euler.y << " " << euler.z;
+          pose_file.close();
+          std::cout << "Saved Aruco pose to robot_aruco_pose.txt" << std::endl;
+      }
+      else
+      {
+          std::cerr << "Unable to open file to save pose." << std::endl;
+      }
     }
     // pause the video
     if ((key == 'p' || key == 'P'))
